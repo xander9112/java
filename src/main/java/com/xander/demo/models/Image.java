@@ -1,5 +1,9 @@
 package com.xander.demo.models;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,9 +11,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +29,7 @@ public class Image {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id")
-  private Long id;
+  private UUID id;
 
   @Column(name = "name")
   private String name;
@@ -38,12 +43,20 @@ public class Image {
   @Column(name = "content_type")
   private String contentType;
 
-  @Column(name = "is_preview_image")
-  private boolean isPreviewImage;
-
-  @Lob
-  private byte[] bytes;
+  @Column(name = "ext")
+  private String ext;
 
   @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+  @JsonBackReference
   private Post post;
+
+  public Map<String, String> getSized() {
+    Map<String, String> _images = new HashMap<String, String>();
+
+    _images.put("small", "media/" + this.id + "/small");
+    _images.put("mid", "media/" + this.id + "/mid");
+    _images.put("high", "media/" + this.id + "/high");
+
+    return _images;
+  }
 }

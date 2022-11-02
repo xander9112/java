@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,9 +39,8 @@ public class Post {
   private String content;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "post")
+  @JsonManagedReference
   private List<Image> images = new ArrayList<>();
-
-  private Long previewImageId;
 
   private LocalDateTime createdAt;
 
