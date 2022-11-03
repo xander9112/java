@@ -2,7 +2,6 @@ package com.xander.demo.models;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -12,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -27,9 +27,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Image {
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  // @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id")
-  private UUID id;
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "image_id_generator")
+  @SequenceGenerator(name = "image_id_generator", sequenceName = "image_sequence", allocationSize = 1)
+  private Long id;
 
   @Column(name = "name")
   private String name;
@@ -39,6 +41,12 @@ public class Image {
 
   @Column(name = "size")
   private Long size;
+
+  @Column(name = "width")
+  private double width;
+
+  @Column(name = "height")
+  private double height;
 
   @Column(name = "content_type")
   private String contentType;
@@ -50,7 +58,7 @@ public class Image {
   @JsonBackReference
   private Post post;
 
-  public Map<String, String> getSized() {
+  public Map<String, String> getSizes() {
     Map<String, String> _images = new HashMap<String, String>();
 
     _images.put("small", "media/" + this.id + "/small");

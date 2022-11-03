@@ -28,9 +28,5 @@ public class FileUploadUtil {
     Path filePath = uploadPath.resolve(fileName);
 
     Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-
-  }
-
-  public static void saveFile(String filePath, String string, BufferedImage small) {
   }
 }

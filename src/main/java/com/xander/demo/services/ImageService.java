@@ -1,38 +1,71 @@
 package com.xander.demo.services;
 
 import javax.imageio.ImageIO;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.*;
 
+import org.imgscalr.Scalr;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.xander.demo.models.Image;
+import com.xander.demo.repositories.ImageRepository;
 import com.xander.demo.utils.FileUploadUtil;
+import com.xander.demo.utils.GetFileExtension;
 
 @Service
 public class ImageService {
+
+  public ImageService(ImageRepository imageRepository) {
+    this.imageRepository = imageRepository;
+  }
+
+  private ImageRepository imageRepository;
+
   private int SMALL_WIDTH = 320;
   private int MEDIUM_WIDTH = 640;
-  private int HIGH_WIDTH = 1024;
+  private int HIGH_WIDTH = 1080;
+
+  public Image save(MultipartFile file, String uploadDir) throws IOException {
+    Image image = imageRepository.save(toImageEntity(file));
+
+    String fileName = image.getId().toString() + '.' +
+        GetFileExtension.getFileExtension(
+            StringUtils.cleanPath(file.getOriginalFilename()));
+
+    BufferedImage bufferedImage = getBufferedImage(file);
+
+    int originalWidth = bufferedImage.getWidth();
+    int originalHeight = bufferedImage.getHeight();
+
+    double ratio = ((double) originalWidth / originalHeight);
+
+    image.setWidth(HIGH_WIDTH);
+    image.setHeight(HIGH_WIDTH / ratio);
+
+    generateImages(file, uploadDir + image.getId().toString(), fileName);
+
+    Image newImage = imageRepository.save(image);
+
+    return newImage;
+  }
 
   void generateImages(MultipartFile file, String filePath, String fileName) throws IOException {
-    InputStream inputStream = new ByteArrayInputStream(file.getBytes());
-    BufferedImage bufferedImage = ImageIO.read(inputStream);
+    BufferedImage bufferedImage = getBufferedImage(file);
 
-    String extension = "";
+    String extension = GetFileExtension.getFileExtension(file.getOriginalFilename());
 
-    int index = fileName.lastIndexOf('.');
+    int originalWidth = bufferedImage.getWidth();
+    int originalHeight = bufferedImage.getHeight();
 
-    if (index > 0) {
-      extension = fileName.substring(index + 1);
-    }
+    int ratio = originalWidth / originalHeight;
 
-    BufferedImage small = resizeImage(bufferedImage, SMALL_WIDTH, SMALL_WIDTH * 5 / 4);
-    BufferedImage mid = resizeImage(bufferedImage, MEDIUM_WIDTH, MEDIUM_WIDTH * 5 / 4);
-    BufferedImage high = resizeImage(bufferedImage, HIGH_WIDTH, HIGH_WIDTH * 5 / 4);
+    BufferedImage small = resizeImage(bufferedImage, SMALL_WIDTH, SMALL_WIDTH / ratio);
+    BufferedImage mid = resizeImage(bufferedImage, MEDIUM_WIDTH, MEDIUM_WIDTH / ratio);
+    BufferedImage high = resizeImage(bufferedImage, HIGH_WIDTH, HIGH_WIDTH / ratio);
 
     FileUploadUtil.saveFile(small, "small." + extension, extension, filePath);
     FileUploadUtil.saveFile(mid, "mid." + extension, extension, filePath);
@@ -40,14 +73,24 @@ public class ImageService {
   }
 
   BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) throws IOException {
-    BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+    return Scalr.resize(originalImage, targetWidth);
+  }
 
-    Graphics2D graphics2D = resizedImage.createGraphics();
+  private Image toImageEntity(MultipartFile file) throws IOException {
+    Image image = new Image();
 
-    graphics2D.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+    image.setName(file.getName());
+    image.setOriginalFileName(file.getOriginalFilename());
+    image.setContentType(file.getContentType());
+    image.setSize(file.getSize());
+    image.setExt(GetFileExtension.getFileExtension(file.getOriginalFilename()));
 
-    graphics2D.dispose();
+    return image;
+  }
 
-    return resizedImage;
+  private BufferedImage getBufferedImage(MultipartFile file) throws IOException {
+    InputStream inputStream = new ByteArrayInputStream(file.getBytes());
+
+    return ImageIO.read(inputStream);
   }
 }

@@ -1,15 +1,15 @@
 package com.xander.demo.controllers;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.InputStream;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,26 +28,35 @@ public class ImageController {
     this.imageRepository = imageRepository;
   }
 
-  // @GetMapping(value = "/media/{id}/{size}")
-  // public @ResponseBody byte[] read(@PathVariable(name = "id") String id,
-  // @PathVariable(name = "size") String size) {
+  @ResponseBody
+  @GetMapping(value = "/media/{id}/{size}")
+  public ResponseEntity<byte[]> read(@PathVariable(name = "id") Long id,
+      @PathVariable(name = "size") String size) throws IOException {
 
-  // Optional<Image> image = imageRepository.findById(UUID.fromString(id));
+    Optional<Image> image = imageRepository.findById(id);
+    HttpHeaders headers = new HttpHeaders();
 
-  // // if (image.isEmpty()) {
-  // // return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-  // // }
+    headers.setCacheControl(CacheControl.noCache().getHeaderValue());
+    headers.setContentType(MediaType.IMAGE_JPEG);
 
-  // // File f = new File("media/" + id + "/" + size + "." +
-  // image.get().getExt());
+    ResponseEntity<byte[]> responseEntity;
 
-  // InputStream in = getClass()
-  // .getResourceAsStream"media/" + id + "/" + size + "." + image.get().getExt());
+    if (image.isEmpty()) {
+      responseEntity = new ResponseEntity<>(null, headers, HttpStatus.NOT_FOUND);
+    } else {
+      File file = new File("media/" + id + "/" + size + "." + image.get().getExt());
 
-  // ByteArrayOutputStream os = new ByteArrayOutputStream();
-  // ImageIO.write(file, ext, os);
-  // InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
+      if (!file.exists()) {
+        responseEntity = new ResponseEntity<>(null, headers, HttpStatus.NOT_FOUND);
+      } else {
+        byte[] fileContent = Files.readAllBytes(file.toPath());
 
-  // return IOUtils.toByteArray(in);
-  // }
+        responseEntity = new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
+      }
+
+    }
+
+    return responseEntity;
+
+  }
 }

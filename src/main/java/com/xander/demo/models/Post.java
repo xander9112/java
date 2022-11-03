@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -28,7 +29,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Post {
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "application_id_generator")
+  @SequenceGenerator(name = "application_id_generator", sequenceName = "applications_sequence", allocationSize = 1)
   @Column(name = "id")
   private Long id;
 
