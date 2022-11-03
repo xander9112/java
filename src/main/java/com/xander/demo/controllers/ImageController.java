@@ -28,26 +28,26 @@ public class ImageController {
     this.imageRepository = imageRepository;
   }
 
-  @GetMapping(value = "/media/{id}/{size}")
-  public @ResponseBody byte[] read(@PathVariable(name = "id") String id, @PathVariable(name = "size") String size) {
+  // @GetMapping(value = "/media/{id}/{size}")
+  // public @ResponseBody byte[] read(@PathVariable(name = "id") String id,
+  // @PathVariable(name = "size") String size) {
 
-    Optional<Image> image = imageRepository.findById(UUID.fromString(id));
+  // Optional<Image> image = imageRepository.findById(UUID.fromString(id));
 
-    // if (image.isEmpty()) {
-    //   return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    // }
+  // // if (image.isEmpty()) {
+  // // return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+  // // }
 
-    // File f = new File("media/" + id + "/" + size + "." + image.get().getExt());
+  // // File f = new File("media/" + id + "/" + size + "." +
+  // image.get().getExt());
 
-    
+  // InputStream in = getClass()
+  // .getResourceAsStream"media/" + id + "/" + size + "." + image.get().getExt());
 
-    InputStream in = getClass()
-    .getResourceAsStream"media/" + id + "/" + size + "." + image.get().getExt());
+  // ByteArrayOutputStream os = new ByteArrayOutputStream();
+  // ImageIO.write(file, ext, os);
+  // InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
 
-ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ImageIO.write(file, ext, os);
-    InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
-
-    return IOUtils.toByteArray(in);
-  }
+  // return IOUtils.toByteArray(in);
+  // }
 }
