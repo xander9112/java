@@ -1,8 +1,6 @@
 package com.xander.demo.models;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,7 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -23,14 +21,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "stories")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Post {
+public class Story {
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "post_id_generator")
-  @SequenceGenerator(name = "post_id_generator", sequenceName = "posts_sequence", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "story_id_generator")
+  @SequenceGenerator(name = "story_id_generator", sequenceName = "stories_sequence", allocationSize = 1)
   @Column(name = "id")
   private Long id;
 
@@ -40,9 +38,9 @@ public class Post {
   @Column(name = "content", length = 2048)
   private String content;
 
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "post")
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "story")
   @JsonManagedReference
-  private List<Image> images = new ArrayList<>();
+  private Image image;
 
   private LocalDateTime createdAt;
 
@@ -51,14 +49,11 @@ public class Post {
     createdAt = LocalDateTime.now();
   }
 
-  public void addImageToPost(Image image) {
-    image.setPost(this);
+  public void addImageToStory(Image image) {
+    image.setStory(this);
 
-    if (images == null) {
-      images = new ArrayList<>();
-    }
-
-    images.add(image);
+    setImage(image);
+    // images.add(image);
 
   }
 }

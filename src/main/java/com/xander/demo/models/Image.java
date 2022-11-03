@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -30,7 +31,7 @@ public class Image {
   // @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "image_id_generator")
-  @SequenceGenerator(name = "image_id_generator", sequenceName = "image_sequence", allocationSize = 1)
+  @SequenceGenerator(name = "image_id_generator", sequenceName = "images_sequence", allocationSize = 1)
   private Long id;
 
   @Column(name = "name")
@@ -58,12 +59,16 @@ public class Image {
   @JsonBackReference
   private Post post;
 
+  @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+  @JsonBackReference
+  private Story story;
+
   public Map<String, String> getSizes() {
     Map<String, String> _images = new HashMap<String, String>();
 
     _images.put("small", "media/" + this.id + "/small");
     _images.put("mid", "media/" + this.id + "/mid");
-    _images.put("high", "media/" + this.id + "/high");
+    _images.put("big", "media/" + this.id + "/big");
 
     return _images;
   }

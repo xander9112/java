@@ -65,11 +65,11 @@ public class ImageService {
 
     BufferedImage small = resizeImage(bufferedImage, SMALL_WIDTH, SMALL_WIDTH / ratio);
     BufferedImage mid = resizeImage(bufferedImage, MEDIUM_WIDTH, MEDIUM_WIDTH / ratio);
-    BufferedImage high = resizeImage(bufferedImage, HIGH_WIDTH, HIGH_WIDTH / ratio);
+    BufferedImage big = resizeImage(bufferedImage, HIGH_WIDTH, HIGH_WIDTH / ratio);
 
     FileUploadUtil.saveFile(small, "small." + extension, extension, filePath);
     FileUploadUtil.saveFile(mid, "mid." + extension, extension, filePath);
-    FileUploadUtil.saveFile(high, "high." + extension, extension, filePath);
+    FileUploadUtil.saveFile(big, "big." + extension, extension, filePath);
   }
 
   BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) throws IOException {
