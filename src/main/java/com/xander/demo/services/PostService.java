@@ -52,6 +52,8 @@ public class PostService {
   public void deletePost(Long id) {
     log.info("Deleting post {}", id);
 
+    imageService.deleteImage(uploadDir, id);
+
     postRepository.deleteById(id);
   }
 
