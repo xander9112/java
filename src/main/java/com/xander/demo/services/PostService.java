@@ -37,7 +37,7 @@ public class PostService {
 
     if (file.getSize() != 0) {
 
-      Image image = imageService.save(file, uploadDir);
+      Image image = imageService.save(file, uploadDir); // TODO: Переделать на ид картинки
 
       try {
         postFromDb.addImageToPost(image);
@@ -52,7 +52,7 @@ public class PostService {
   public void deletePost(Long id) {
     log.info("Deleting post {}", id);
 
-    imageService.deleteImage(uploadDir, id);
+    imageService.deleteImage(uploadDir, id); // TODO: Переделать на ид картинки
 
     postRepository.deleteById(id);
   }
