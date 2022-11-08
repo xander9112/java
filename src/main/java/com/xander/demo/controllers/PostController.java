@@ -35,6 +35,7 @@ public class PostController {
   }
 
   @PostMapping(value = "/posts")
+  // @PreAuthorize("hasRole('USER')")
   public ResponseEntity<Post> createPost(@RequestParam(name = "file1", required = false) MultipartFile file1, Post post)
       throws IOException {
     return new ResponseEntity<>(postService.savePost(post, file1), HttpStatus.OK);

@@ -2,6 +2,7 @@ package com.xander.demo.services;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +37,6 @@ public class PostService {
     Post postFromDb = postRepository.save(post);
 
     if (file.getSize() != 0) {
-
       Image image = imageService.save(file, uploadDir); // TODO: Переделать на ид картинки
 
       try {
@@ -52,7 +52,9 @@ public class PostService {
   public void deletePost(Long id) {
     log.info("Deleting post {}", id);
 
-    imageService.deleteImage(uploadDir, id); // TODO: Переделать на ид картинки
+    Optional<Post> post = postRepository.findById(id);
+
+    imageService.deleteImage(uploadDir, post.get().getImages().get(0).getId());
 
     postRepository.deleteById(id);
   }

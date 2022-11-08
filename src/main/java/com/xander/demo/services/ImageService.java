@@ -66,18 +66,9 @@ public class ImageService {
     LOGGER.info(uploadDir + SMALL_NAME + "." + image.get().getExt());
 
     if (!image.isEmpty()) {
-      File f_small = new File(uploadDir + id);
-      // File f_small = new File(uploadDir + id + "/" + SMALL_NAME + "." +
-      // image.get().getExt());
-      // File f_medium = new File(uploadDir + id + "/" + MEDIUM_NAME + "." +
-      // image.get().getExt());
-      // File f_big = new File(uploadDir + id + "/" + BIG_NAME + "." +
-      // image.get().getExt());
+      File folder = new File(uploadDir + id);
 
-      deleteDirectory(f_small);
-      // f_small.delete();
-      // f_medium.delete();
-      // f_big.delete();
+      deleteDirectory(folder);
     }
   }
 
